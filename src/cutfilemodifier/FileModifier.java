@@ -21,7 +21,8 @@ import javafx.scene.control.Alert.AlertType;
 public class FileModifier {
     private final String regex = "0 pendown"; // String to search for
     private final String addition = "escape"; // String that will be added
-    private final String replacement = addition + "\n" + regex; // Adds the new string on the line above the regex
+    private final String replacement = addition + "\r\n" + regex; // Adds the new string on the line above the regex
+    private final String conditional = "1 pendown"; // String must exist to continue
     
     public FileModifier() {
     }
@@ -37,6 +38,10 @@ public class FileModifier {
     
     public String getReplacement() {
         return replacement;
+    }
+    
+    public String getConditional() {
+        return conditional;
     }
     
     public String readFile(File file) {
@@ -58,7 +63,7 @@ public class FileModifier {
                 fileString = this.readLine(line, fileString);
             }   
 
-            // Close file the file
+            // Close file
             bufferedReader.close();         
         }
         catch(FileNotFoundException ex) {
@@ -77,13 +82,13 @@ public class FileModifier {
     
     public String readLine(String s, String fileString) {
         // Adds the next line to the string and returns the whole thing
-        fileString = fileString + s + "\n";
+        fileString = fileString + s + "\r\n";
         return fileString; 
     }
     
-    public boolean stringExists(String fileString) {
+    public boolean stringExists(String fileString, String regex) {
         // Checks if the string to be added already exists in the file
-        if (fileString.contains(addition)) {
+        if (fileString.contains(regex)) {
             return true;
         }
         return false;

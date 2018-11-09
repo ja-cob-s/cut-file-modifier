@@ -93,24 +93,41 @@ public class MainScreenController implements Initializable {
 
     @FXML
     private void runButtonHandler(ActionEvent event) {
+        int numFilesModified = 0;
         // Loops through each file in the list
         for (int i = 0; i < files.size(); i++) {
             String oldFileString = "";
             // Reads the file and assigns to a string
             oldFileString = fileModifier.readFile(files.get(i));
             // Checks if string already exists and skips this file if so
-            if (fileModifier.stringExists(oldFileString)) {
+            if (fileModifier.stringExists(oldFileString, fileModifier.getAddition())) {
                 this.showAlertDialog("File '" + files.get(i).getName() + 
-                        "' already contains '" + fileModifier.getAddition() + "'.");
+                        "' already contains '" + fileModifier.getAddition() + 
+                        "' and will not be modified.");
+                continue;
+            }
+            // Checks if conditional string exists and skips this file if it does not
+            if (!fileModifier.stringExists(oldFileString, fileModifier.getConditional())) {
+                this.showAlertDialog("File '" + files.get(i).getName() + 
+                        "' has no plotting and will not be modified.");
                 continue;
             }
             // Makes the replacement
             String newFileString = fileModifier.stringReplace(oldFileString);
             // Saves (overwrites) the file
             fileModifier.writeFile(files.get(i), newFileString);
+            numFilesModified++;
         }
-        // Friendly dialog box to inform user that the replace is complete
-        this.showAlertDialog("Done!");
+        // Friendly dialog boxs
+        if (numFilesModified > 0) {
+            this.showAlertDialog("Done with " + numFilesModified + " file(s) modified.");
+        } else {
+            if (files.size() == 0) {
+                this.showAlertDialog("No files selected.");
+            } else {
+                this.showAlertDialog("No files modified.");
+            }
+        } 
     }
 
     @FXML
